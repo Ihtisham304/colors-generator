@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ColorContext } from "../store/store";
 import { MdOutlineRefresh } from "react-icons/md";
 import { CiCirclePlus } from "react-icons/ci";
@@ -14,6 +14,9 @@ const Navigation = ({ lock }) => {
   const [user_name, setUserName] = useState("");
   const navigate = useNavigate();
 
+  console.log(colorPallete);
+
+
   const handleSaveCollection = async (e) => {
     e.preventDefault();
     const newColorPallete = { ...colorPallete, user_name };
@@ -21,7 +24,7 @@ const Navigation = ({ lock }) => {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/create/`,
-        newColorPallete
+        {user_name, colours: colors }
       );
       console.log(response);
     } catch (error) {
