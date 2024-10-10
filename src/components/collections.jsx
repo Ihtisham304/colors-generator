@@ -1,35 +1,54 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
+
 const Collection = () => {
   const [collections, setCollections] = useState([]);
   const navigate = useNavigate();
-
-  const getAllCollections = async()=>{
+  const getAllCollections = async () => {
     try {
-        // const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/`)
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/get/`);
+      setCollections(response.data);
+      console.log(response.data);
     } catch (error) {
-      
+      console.log(error);
     }
-  }
+  };
+  const deleteCollection = async (id) => {
+    try {
+      const response = await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/delete/${id}/`
+      );
+      const updatedCollections = collections.filter(
+        (collection) => collection.id !== id
+      );
+      setCollections(updatedCollections);
+      toast.error("Collection Delete SuccessFully!");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    const storedCollections = JSON.parse(localStorage.getItem("colors")) || [];
-    setCollections(storedCollections);
-    
+    // const storedCollections = JSON.parse(localStorage.getItem("colors")) || [];
+    // setCollections(storedCollections);
+    getAllCollections();
   }, []);
-
+  useEffect(() => {
+    setCollections(collections);
+  }, [collections]);
   const handleEdit = (id) => {
     console.log(`Edit collection with ID: ${id}`);
   };
 
-  const handleDelete = (id) => {
-    const updatedCollections = collections.filter(
-      (collection) => collection.id !== id
-    );
-    setCollections(updatedCollections);
-    localStorage.setItem("collections", JSON.stringify(updatedCollections));
-    console.log(`Deleted collection with ID: ${id}`);
-  };
+  // const handleDelete = (id) => {
+  //   const updatedCollections = collections.filter(
+  //     (collection) => collection.id !== id
+  //   );
+  //   setCollections(updatedCollections);
+  //   localStorage.setItem("collections", JSON.stringify(updatedCollections));
+  //   console.log(`Deleted collection with ID: ${id}`);
+  // };
 
   return (
     <div className="container mx-auto p-5">
@@ -37,7 +56,7 @@ const Collection = () => {
         <h2 className="text-2xl font-bold mb-4">Color Collections</h2>
         <Link
           to={"/"}
-          className='flex items-center text-white bg-blue-500 hover:bg-blue-600 rounded p-2'
+          className="flex items-center text-white bg-blue-500 hover:bg-blue-600 rounded p-2"
         >
           Back
         </Link>
@@ -60,8 +79,11 @@ const Collection = () => {
                   {collection.id}
                 </td>
                 <td className="py-2 px-4 border-b text-center">
+                  {collection.user_name}
+                </td>
+                <td className="py-2 px-4 border-b text-center">
                   <div className="flex justify-center space-x-2">
-                    {collection.colors.map((color, index) => (
+                    {collection.colours.map((color, index) => (
                       <div
                         key={index}
                         className="w-8 h-8 rounded"
@@ -73,13 +95,7 @@ const Collection = () => {
                 </td>
                 <td className="py-2 px-4 border-b text-center">
                   <button
-                    onClick={() => handleEdit(collection.id)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded mr-2"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(collection.id)}
+                    onClick={() => deleteCollection(collection.id)}
                     className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
                   >
                     Delete
@@ -90,6 +106,7 @@ const Collection = () => {
           </tbody>
         </table>
       )}
+      <Toaster position="top-right" reverseOrder={false} />
     </div>
   );
 };

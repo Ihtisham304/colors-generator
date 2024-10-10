@@ -2,17 +2,51 @@ import React, { useContext, useState } from "react";
 import { ColorContext } from "../store/store";
 import { MdOutlineRefresh } from "react-icons/md";
 import { CiCirclePlus } from "react-icons/ci";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { addCollectionToLocalStorage } from "../utils/add-collectionTo-localstorage";
 import toast, { Toaster } from "react-hot-toast";
+import axios from "axios";
+
 const Navigation = ({ lock }) => {
   const { colors, changeColor } = useContext(ColorContext);
   const [showModal, setShowModal] = useState(false);
-  const handleSaveCollection = () => {
-    addCollectionToLocalStorage(colors);
+  const [colorPallete, setColorPallete] = useState({ colours: colors });
+  const [user_name, setUserName] = useState("");
+  const navigate = useNavigate();
+
+  const handleSaveCollection = async (e) => {
+    e.preventDefault();
+    const newColorPallete = { ...colorPallete, user_name };
+    console.log(newColorPallete);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/create/`,
+        newColorPallete
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
     setShowModal(false);
-    toast.success("Collection added to LocalStorage!");
+    toast.success("Collection Added Successfully!", {
+      duration: 500,
+    });
+    setTimeout(() => {
+      navigate("/collection");
+    }, 500);
   };
+  const addColorPallete = async () => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/create/`,
+        colorPallete
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <nav className="bg-slate-600 p-4 flex justify-between items-center shadow-md">
@@ -54,13 +88,16 @@ const Navigation = ({ lock }) => {
               </label>
               <input
                 type="text"
-                id="collectionName"
+                name="user_name"
+                onKeyDown={(e) => e.stopPropagation()}
+                onChange={(e) => setUserName(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter collection name"
               />
             </div>
             <div className="flex justify-end gap-4">
               <button
+                type="submit"
                 onClick={handleSaveCollection}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
               >
