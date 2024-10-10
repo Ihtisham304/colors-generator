@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 const Collection = () => {
   const [collections, setCollections] = useState([]);
   const navigate = useNavigate();
 
+  const getAllCollections = async()=>{
+    try {
+        // const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/`)
+    } catch (error) {
+      
+    }
+  }
   useEffect(() => {
     const storedCollections = JSON.parse(localStorage.getItem("colors")) || [];
     setCollections(storedCollections);
+    
   }, []);
 
   const handleEdit = (id) => {

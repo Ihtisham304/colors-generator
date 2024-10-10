@@ -45,6 +45,20 @@ const Navigation = ({ lock }) => {
             <h3 className="text-xl font-semibold text-gray-700 mb-4">
               Are you sure you want to add this collection to LocalStorage?
             </h3>
+            <div className="mb-4">
+              <label
+                htmlFor="collectionName"
+                className="block text-gray-700 font-semibold mb-2"
+              >
+                Collection Name:
+              </label>
+              <input
+                type="text"
+                id="collectionName"
+                className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter collection name"
+              />
+            </div>
             <div className="flex justify-end gap-4">
               <button
                 onClick={handleSaveCollection}
