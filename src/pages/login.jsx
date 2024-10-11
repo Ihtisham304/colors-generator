@@ -1,50 +1,48 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import useAuthToken from "../hooks/useAuthToken";
+import { loginValidation } from "../validation/login-validation";
+import { useFormik } from "formik";
+
+const initialObject = {
+  username: "",
+  password: "",
+};
 
 const Login = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
+    useFormik({
+      initialValues: initialObject,
+      validationSchema: loginValidation,
+      onSubmit: async (values) => {
+        try {
+          console.log("Form values:", values);
+          const response = await axios.post(
+            `${import.meta.env.VITE_BASE_URL}/api/auth/login/`,
+            {
+              username: values.username,
+              password: values.password,
+            }
+          );
+          console.log(response);
+          const { access_token } = response.data;
+          saveToken(access_token);
+
+          toast.success("Login successful!");
+          setTimeout(() => {
+            navigate("/user");
+          }, 500);
+        } catch (error) {
+          toast.error("Something went wrong. Please try again.");
+          console.log(error);
+        }
+      },
+    });
+
   const { saveToken } = useAuthToken();
   const navigate = useNavigate();
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
-    if (!username || !password) {
-      toast.error("Please fill out all fields");
-      return;
-    }
-
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/auth/login/`,
-        {
-          username,
-          password,
-        }
-      );
-      const { access_token } = response.data;
-      saveToken(access_token);
-      console.log(response);
-      if (response.status === 200) {
-        setTimeout(() => {
-          toast.success("Login successful!");
-        }, 1000);
-
-        setTimeout(() => {
-          navigate("/user");
-        }, 1000);
-      } else {
-        toast.error(response.data.message || "Login failed");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong. Please try again.");
-    }
-  };
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (token) {
@@ -56,7 +54,7 @@ const Login = () => {
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
               htmlFor="username"
@@ -66,12 +64,16 @@ const Login = () => {
             </label>
             <input
               type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              name="username"
+              value={values.username}
+              onBlur={handleBlur}
+              onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter username or email"
             />
+            {errors.username && touched.username && (
+              <small className="text-red-500">{errors.username}</small>
+            )}
           </div>
 
           <div className="mb-4">
@@ -83,12 +85,16 @@ const Login = () => {
             </label>
             <input
               type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              value={values.password}
+              onBlur={handleBlur}
+              onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter password"
             />
+            {errors.password && touched.password && (
+              <small className="text-red-500">{errors.password}</small>
+            )}
           </div>
 
           <button

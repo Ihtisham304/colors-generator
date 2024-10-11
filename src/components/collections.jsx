@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
+import { IoMdArrowBack } from "react-icons/io";
+import { AiOutlineLogout } from "react-icons/ai";
 
 const Collection = () => {
   const [collections, setCollections] = useState([]);
@@ -58,8 +60,20 @@ const Collection = () => {
           to={"/user"}
           className="flex items-center text-white bg-blue-500 hover:bg-blue-600 rounded p-2"
         >
-          Back
+          <IoMdArrowBack /> Back
         </Link>
+        <button
+          onClick={() => {
+            localStorage.removeItem("access_token");
+            setTimeout(() => {
+              toast.success("Logout SuccessFully");
+            }, 500);
+            navigate("/");
+          }}
+          className="flex items-center text-white bg-blue-500 hover:bg-blue-600 rounded p-2"
+        >
+          <AiOutlineLogout /> logout
+        </button>
       </div>
       {collections.length === 0 ? (
         <p className="text-gray-500">No collections found.</p>
