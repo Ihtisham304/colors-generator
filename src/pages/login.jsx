@@ -5,6 +5,7 @@ import toast, { Toaster } from "react-hot-toast";
 import useAuthToken from "../hooks/useAuthToken";
 import { loginValidation } from "../validation/login-validation";
 import { useFormik } from "formik";
+import { jwtDecode } from "jwt-decode";
 
 const initialObject = {
   username: "",
@@ -26,9 +27,18 @@ const Login = () => {
               password: values.password,
             }
           );
-          console.log(response);
+          console.log(response.data);
           const { access_token } = response.data;
+
+          // Decode the token before accessing userId
+          const decodedToken = jwtDecode(access_token);
+          console.log(decodedToken);
+          const userId = decodedToken.user_id;
+          console.log(userId)
+
+          // Store access token and userId in localStorage
           saveToken(access_token);
+          localStorage.setItem("userId", userId);
 
           toast.success("Login successful!");
           setTimeout(() => {
@@ -43,12 +53,14 @@ const Login = () => {
 
   const { saveToken } = useAuthToken();
   const navigate = useNavigate();
+
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (token) {
       navigate("/user");
     }
   }, [navigate]);
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">

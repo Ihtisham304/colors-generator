@@ -7,10 +7,18 @@ import { AiOutlineLogout } from "react-icons/ai";
 
 const Collection = () => {
   const [collections, setCollections] = useState([]);
+  const token = localStorage.getItem("access_token");
+  console.log(token);
   const navigate = useNavigate();
   const getAllCollections = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/get/`);
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/get/`,{
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setCollections(response.data);
       console.log(response.data);
     } catch (error) {
@@ -65,6 +73,7 @@ const Collection = () => {
         <button
           onClick={() => {
             localStorage.removeItem("access_token");
+            localStorage.removeItem("userId");
             setTimeout(() => {
               toast.success("Logout SuccessFully");
             }, 500);
