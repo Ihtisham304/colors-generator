@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
@@ -8,6 +8,14 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
+  
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      navigate("/user"); 
+    }
+  }, [navigate]);
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -22,7 +30,7 @@ const SignUp = () => {
       );
       toast.success("Signup successful!");
       setTimeout(() => {
-        navigate("/");
+        navigate("/login"); // Redirect to login after successful signup
       }, 500);
     } catch (error) {
       toast.error("Signup failed, please try again.");
@@ -73,7 +81,7 @@ const SignUp = () => {
         </form>
         <p className="text-center mt-4">
           Already have an account?{" "}
-          <Link to="/" className="text-blue-500 hover:underline">
+          <Link to="/login" className="text-blue-500 hover:underline">
             Log in
           </Link>
         </p>

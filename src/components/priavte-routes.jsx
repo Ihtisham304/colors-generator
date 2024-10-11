@@ -5,7 +5,7 @@ import useAuthToken from '../hooks/useAuthToken';
 const PrivateRoute = () => {
   const { token } = useAuthToken();
 
-  return token ? <Outlet /> : <Navigate to="/login" />;
+  return token ? <Outlet /> : <Navigate to="/" />;
 };
 
 export default PrivateRoute;
