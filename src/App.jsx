@@ -44,8 +44,8 @@ const App = () => {
               }
             ></Route>
             <Route path="/collection" element={<Collection />}></Route>
+            <Route path="/edit/:id" element={<EditColors />}></Route>
           </Route>
-          <Route path="/edit/:id" element={<EditColors />}></Route>
         </Routes>
       </Router>
     </>

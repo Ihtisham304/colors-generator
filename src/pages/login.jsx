@@ -28,17 +28,18 @@ const Login = () => {
             }
           );
           console.log(response.data);
-          const { access_token } = response.data;
+          const { access } = response.data;
+          //dek m login time p response b dekata
 
           // Decode the token before accessing userId
-          const decodedToken = jwtDecode(access_token);
-          console.log(decodedToken);
-          const userId = decodedToken.user_id;
-          console.log(userId)
+          // const decodedToken = jwtDecode(access);
+          // console.log(decodedToken);
+          // const userId = decodedToken.user_id;
+          // console.log(userId)
 
           // Store access token and userId in localStorage
-          saveToken(access_token);
-          localStorage.setItem("userId", userId);
+          saveToken(access);
+          // localStorage.setItem("userId", userId);
 
           toast.success("Login successful!");
           setTimeout(() => {
@@ -55,7 +56,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
+    const token = localStorage.getItem("access");
     if (token) {
       navigate("/user");
     }

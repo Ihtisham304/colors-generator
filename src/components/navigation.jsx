@@ -11,43 +11,57 @@ const Navigation = ({ lock }) => {
   const { colors, changeColor } = useContext(ColorContext);
   const [showModal, setShowModal] = useState(false);
   const [colorPallete, setColorPallete] = useState({ colours: colors });
-  const [user_name, setUserName] = useState("");
+  const [username, setUserName] = useState("");
   const navigate = useNavigate();
 
-  console.log(colorPallete);
-
+  // console.log(colorPallete);
 
   const handleSaveCollection = async (e) => {
     e.preventDefault();
-    const newColorPallete = { ...colorPallete, user_name };
-    console.log(newColorPallete);
+    const newColorPallete = { ...colorPallete, username };
+
+    // Get the token from localStorage with key 'access'
+    const token = localStorage.getItem("access");
+
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/create/`,
-        {user_name, colours: colors }
+        `${import.meta.env.VITE_BASE_URL}/add/`,
+        { color_hashes: colors },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Send the token in the Authorization header
+          },
+        }
       );
-      console.log(response);
+      console.log({ username, colors });
+      // Check if the request was successful
+      if (response.status === 201 || response.status === 200) {
+        toast.success("Collection Added Successfully!", {
+          duration: 500,
+        });
+        setTimeout(() => {
+          navigate("/collection");
+        }, 500);
+      } else {
+        throw new Error("Failed to add collection");
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      // Handle errors
+      toast.error(
+        `Error: ${
+          error.response?.status === 404
+            ? "Route not found"
+            : "Failed to add collection"
+        }`,
+        {
+          duration: 2000,
+        }
+      );
     }
+
     setShowModal(false);
-    toast.success("Collection Added Successfully!", {
-      duration: 500,
-    });
-    setTimeout(() => {
-      navigate("/collection");
-    }, 500);
-  };
-  const addColorPallete = async () => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/create/`,
-        colorPallete
-      );
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   return (
@@ -91,7 +105,7 @@ const Navigation = ({ lock }) => {
               </label>
               <input
                 type="text"
-                name="user_name"
+                name="username"
                 onKeyDown={(e) => e.stopPropagation()}
                 onChange={(e) => setUserName(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"

@@ -7,9 +7,9 @@ import { AiOutlineLogout } from "react-icons/ai";
 
 const Collection = () => {
   const [collections, setCollections] = useState([]);
-  const token = localStorage.getItem("access_token");
-  console.log(token);
+  const token = localStorage.getItem("access");
   const navigate = useNavigate();
+
   const getAllCollections = async () => {
     try {
       const response = await axios.get(
@@ -17,49 +17,45 @@ const Collection = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
       setCollections(response.data);
-      console.log(response.data);
     } catch (error) {
       console.log(error);
     }
   };
+
   const deleteCollection = async (id) => {
     try {
       const response = await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}/delete/${id}/`
+        `${import.meta.env.VITE_BASE_URL}/delete/${id}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Sending token for authorization
+          },
+        }
       );
-      const updatedCollections = collections.filter(
-        (collection) => collection.id !== id
-      );
-      setCollections(updatedCollections);
-      toast.error("Collection Delete SuccessFully!");
+      if (response.status === 204) {
+        // Assuming the server returns 204 No Content on successful deletion
+        const updatedCollections = collections.filter(
+          (collection) => collection.id !== id
+        );
+        setCollections(updatedCollections);
+        toast.error("Collection Deleted Successfully!");
+      } else {
+        toast.error("Failed to delete collection.");
+      }
     } catch (error) {
       console.log(error);
+      toast.error("An error occurred while deleting the collection.");
     }
   };
+
   useEffect(() => {
-    // const storedCollections = JSON.parse(localStorage.getItem("colors")) || [];
-    // setCollections(storedCollections);
     getAllCollections();
   }, []);
-  useEffect(() => {
-    setCollections(collections);
-  }, [collections]);
-  const handleEdit = (id) => {
-    console.log(`Edit collection with ID: ${id}`);
-  };
-
-  // const handleDelete = (id) => {
-  //   const updatedCollections = collections.filter(
-  //     (collection) => collection.id !== id
-  //   );
-  //   setCollections(updatedCollections);
-  //   localStorage.setItem("collections", JSON.stringify(updatedCollections));
-  //   console.log(`Deleted collection with ID: ${id}`);
-  // };
 
   return (
     <div className="container mx-auto p-5">
@@ -73,16 +69,13 @@ const Collection = () => {
         </Link>
         <button
           onClick={() => {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("userId");
-            setTimeout(() => {
-              toast.success("Logout SuccessFully");
-            }, 500);
+            localStorage.removeItem("access");
+            toast.success("Logout Successfully");
             navigate("/");
           }}
           className="flex items-center text-white bg-blue-500 hover:bg-blue-600 rounded p-2"
         >
-          <AiOutlineLogout /> logout
+          <AiOutlineLogout /> Logout
         </button>
       </div>
       {collections.length === 0 ? (
@@ -92,6 +85,7 @@ const Collection = () => {
           <thead>
             <tr className="bg-gray-100">
               <th className="py-2 px-4 border-b">ID</th>
+              <th className="py-2 px-4 border-b">Username</th>
               <th className="py-2 px-4 border-b">Colors</th>
               <th className="py-2 px-4 border-b">Actions</th>
             </tr>
@@ -103,11 +97,11 @@ const Collection = () => {
                   {collection.id}
                 </td>
                 <td className="py-2 px-4 border-b text-center">
-                  {collection.user_name}
+                  {collection.user.username}
                 </td>
                 <td className="py-2 px-4 border-b text-center">
                   <div className="flex justify-center space-x-2">
-                    {collection.colours.map((color, index) => (
+                    {collection.color_hashes.map((color, index) => (
                       <div
                         key={index}
                         className="w-8 h-8 rounded"
@@ -119,10 +113,10 @@ const Collection = () => {
                 </td>
                 <td className="py-2 px-4 border-b text-center">
                   <Link
-                    to={`/edit/${id}`}
-                    className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
+                    to={`/edit/${collection.id}`}
+                    className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded"
                   >
-                    Delete
+                    Edit
                   </Link>
                   <button
                     onClick={() => deleteCollection(collection.id)}
