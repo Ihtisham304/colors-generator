@@ -13,7 +13,8 @@ const Collection = () => {
   const getAllCollections = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/get/`,{
+        `${import.meta.env.VITE_BASE_URL}/get/`,
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -117,6 +118,12 @@ const Collection = () => {
                   </div>
                 </td>
                 <td className="py-2 px-4 border-b text-center">
+                  <Link
+                    to={`/edit/${id}`}
+                    className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
+                  >
+                    Delete
+                  </Link>
                   <button
                     onClick={() => deleteCollection(collection.id)}
                     className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"

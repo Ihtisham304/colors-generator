@@ -7,6 +7,7 @@ import { ColorContext } from "./store/store";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Collection from "./components/collections";
 import PrivateRoute from "./components/priavte-routes";
+import EditColors from "./pages/edit-colors";
 
 const App = () => {
   const { colors, changeColor } = useContext(ColorContext);
@@ -44,6 +45,7 @@ const App = () => {
             ></Route>
             <Route path="/collection" element={<Collection />}></Route>
           </Route>
+          <Route path="/edit/:id" element={<EditColors />}></Route>
         </Routes>
       </Router>
     </>

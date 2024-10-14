@@ -21,7 +21,7 @@ const SignUp = () => {
       onSubmit: async (values) => {
         try {
           const response = await axios.post(
-            `${import.meta.env.VITE_BASE_URL}/api/auth/register/`,
+            `${import.meta.env.VITE_BASE_URL}/register/`,
             {
               username: values.username,
               email: values.email,
